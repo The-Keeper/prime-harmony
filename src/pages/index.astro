@@ -1,16 +1,10 @@
 ---
-
+const site = import.meta.env.SITE;
+const base = import.meta.env.BASE_URL;
+const lang = Astro.currentLocale;
 ---
-
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Prime Harmony</title>
-	</head>
-	<body>
-		<h1>Prime Harmony</h1>
-	</body>
+<html>
+  <head>
+    <meta http-equiv="refresh" content=`0; url=${site}${base}/${lang}/` />
+  </head>
 </html>

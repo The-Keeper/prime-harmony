@@ -5,4 +5,12 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   site: 'https://the-keeper.github.io',
   base: 'prime-harmony',
+  i18n: {
+    locales: ["ru", "en"],
+    defaultLocale: "en",
+    routing: {
+      redirectToDefaultLocale: true,
+      fallbackType: "rewrite",
+    }
+  },
 });
