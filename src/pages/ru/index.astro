@@ -1,8 +1,10 @@
 ---
+import Quarter from "../../components/Quarter.astro";
 
+import { quarterLayout } from "../../store";
 ---
 
-<html lang="en">
+<html lang="ru">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -12,5 +14,53 @@
 	</head>
 	<body>
 		<h1>Первичная гармония</h1>
+
+		<select id="layoutselector">
+			<option value={5}>5</option>
+			<option value={6}>6</option>
+			<option value={9}>9</option>
+			<option selected value={10}>10</option>
+		</select>
+
+		<Quarter title="Весна"></Quarter>
+		<Quarter title="Лето"></Quarter>
+		<Quarter title="Осень"></Quarter>
+		<Quarter title="Зима"></Quarter>
+
+		<details open>
+		<summary>Что это такое?</summary>
+		Проект солнечного календаря.
+		</details>
+
+
+		<details>
+		<summary>Чем он лучше григорианского?</summary>
+		<li>Не меняется из года в год.</li>
+		<li>Кварталы всегда одинаковой длины по 90 дней.</li>
+		<li>Лучше следует солнечным циклам.</li>
+
+		</details>
+
+
+		<script>
+		import { quarterLayout } from "../../store";
+
+			const selector = document.querySelector('#layoutselector');
+			
+			selector?.addEventListener('change', (e) => {
+    			quarterLayout.set(e.target?.value);
+			});
+
+			const elems = document.getElementsByClassName('calgrid');
+
+			quarterLayout.subscribe((val, oldVal) => {
+				for (const elem of elems) {
+					elem?.classList.remove(`cols-${oldVal}`);
+					elem?.classList.add(`cols-${val}`);
+				}
+			})
+
+
+		</script>
 	</body>
 </html>
