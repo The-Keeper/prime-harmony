@@ -1,0 +1,28 @@
+---
+import {
+  i18n,
+  base
+} from "astro:config/client";
+
+const supportedLangs = i18n?.locales;
+const fallbackLang = i18n?.defaultLocale;
+
+---
+
+<html>
+  <head>
+    <!-- Client-side redirect (works in static builds) -->
+    <script define:vars={{ base, supportedLangs, fallbackLang }}>
+		const browserLang = navigator.language.split("-")[0];
+		const targetLang = supportedLangs.includes(browserLang) ? browserLang : fallbackLang;
+		const url = `${base}/${targetLang}/`
+
+      window.location.replace(url);
+    </script>
+    <!-- Fallback for non-JS (meta refresh) -->
+	<meta http-equiv="refresh" content=`"0; url=${base}/${fallbackLang}/"` />
+  </head>
+  <body>
+    Redirecting...
+  </body>
+</html>
