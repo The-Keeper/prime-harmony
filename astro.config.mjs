@@ -15,5 +15,5 @@ export default defineConfig({
             fallbackType: "rewrite",
         },
     },
-    integrations: [UnoCSS(), svelte()],
+    // integrations: [UnoCSS(), svelte()],
 });

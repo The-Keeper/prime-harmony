@@ -1,0 +1,27 @@
+---
+import ThemeToggle from "../components/ThemeToggle.astro";
+import Logo from '../assets/logo.svg';
+import LangSelect from "./LangSelect.astro";
+
+const currentLang = Astro.currentLocale;
+const availableLangs = {
+  "ru": "Русский",
+  "en": "English"
+}
+
+---
+<nav class="container-fluid">
+  <ul>
+    <li>
+      <Logo fill="currentColor" />
+    </li>
+  </ul>
+  <ul>
+    <li><a href="#">Services</a></li>
+    <li><a href="#">Products</a></li>
+  </ul>
+  <ul>
+    {currentLang && <li><LangSelect currentLang={currentLang} availableLanguages={availableLangs}/></li>}
+    <li><ThemeToggle /></li>
+  </ul>
+</nav>

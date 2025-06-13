@@ -9,10 +9,15 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.8.0",
-    "nanostores": "^1.0.1"
+    "@lucide/astro": "^0.511.0",
+    "@picocss/pico": "^2.1.1",
+    "astro": "^5.8.0"
   },
   "devDependencies": {
+    "sass": "^1.89.0",
+    "stylelint": "^16.19.1",
+    "stylelint-config-recommended-scss": "^15.0.1",
+    "stylelint-config-standard": "^38.0.0",
     "unocss": "^66.1.2"
   }
 }

@@ -1,66 +1,161 @@
 ---
-import Quarter from "../../components/Quarter.astro";
+import Layout from "../../layouts/Layout.astro";
+import { Image } from "astro:assets";
+import heroImage from "../../assets/hero.png";
+import { CalendarHeartIcon, EarthIcon } from "@lucide/astro";
+import { ClientRouter } from "astro:transitions";
+import { PrimeHarmonyDate } from "../../lib/calendar";
+import SeasonCalendar from "../../components/SeasonCalendar.astro";
+ 
 
-import { quarterLayout } from "../../store";
+const today = PrimeHarmonyDate.fromDate(new Date());
+const cycleInfo = today.cycleInfo();
 ---
 
-<html lang="ru">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Первичная гармония</title>
-	</head>
-	<body>
-		<h1>Первичная гармония</h1>
+<style>
+  /* main > *:nth-child(odd) {
+      background-color: #ff000015;  
+    }
 
-		<select id="layoutselector">
-			<option value={5}>5</option>
-			<option value={6}>6</option>
-			<option value={9}>9</option>
-			<option selected value={10}>10</option>
-		</select>
+    main > *:nth-child(even) {
+      background-color: #00000015; 
+    } */
 
-		<Quarter title="Весна"></Quarter>
-		<Quarter title="Лето"></Quarter>
-		<Quarter title="Осень"></Quarter>
-		<Quarter title="Зима"></Quarter>
+  /* Custom Hero Styling */
+  section {
+    min-height: 80vh;
+    border-radius: 1rem; /* 16px */
+  }
 
-		<details open>
-		<summary>Что это такое?</summary>
-		Проект солнечного календаря.
-		</details>
+  .even-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+  }
 
+  .hero {
+    align-items: center;
+    padding: 2rem 0;
+    /* background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); */
+  }
 
-		<details>
-		<summary>Чем он лучше григорианского?</summary>
-		<li>Не меняется из года в год.</li>
-		<li>Кварталы всегда одинаковой длины по 90 дней.</li>
-		<li>Лучше следует солнечным циклам.</li>
+  .centered {
+    text-align: center;
+    justify-content: center;  /* Horizontal centering */
+    align-items: center;      /* Vertical centering */
+  }
 
-		</details>
+  .smallcal {
+    font-size: 0.6rem;
+    width: 12rem;
+  }
 
+</style>
 
-		<script>
-		import { quarterLayout } from "../../store";
+<Layout title="Первичная гармония">
+  <main class="container">
+    <section class="hero grid">
+      <div class="even-column centered">
+        <h1>{today.day}-й день {today.season}-го&nbsp;сезона {today.year}&nbsp;года</h1>
+        <p>{cycleInfo.year}-й год {cycleInfo.cycle}-го цикла</p>
+        <a role="button" href="#what">Что это?</a>
+      </div>
 
-			const selector = document.querySelector('#layoutselector');
-			
-			selector?.addEventListener('change', (e) => {
-    			quarterLayout.set(e.target?.value);
-			});
+      <div class="container">
+          <SeasonCalendar currentDay={today.day} title={`${today.season}-й сезон`} />
+      </div>
+    </section>
+    <section id="what" class="even-column container">
+      <h2>Что это?</h2>
 
-			const elems = document.getElementsByClassName('calgrid');
+      <div class="grid">
+        <div>
+          <h3>Календарь, который не&nbsp;устаревает</h3>
+          <ul>
+            <li>Вечная система без ежегодных обновлений</li>
+            <li>128-летние циклы с естественной точностью</li>
+            <li>Сезоны одинаковой длины</li>
+          </ul>
+        </div>
+          <div class="smallcal">
+          <SeasonCalendar currentDay={0} />
+          </div>
+      </div>
+      <div class="grid">
+          <h3>Как это работает?</h3>
+          <ul>
+            <li>Четыре сезона по 90 дней + 5–6 праздичных дней</li>
+            <li>Високосные год, когда номер года в цикле — простое число</li>
+          </ul>
+      </div>
+    </section>
 
-			quarterLayout.subscribe((val, oldVal) => {
-				for (const elem of elems) {
-					elem?.classList.remove(`cols-${oldVal}`);
-					elem?.classList.add(`cols-${val}`);
-				}
-			})
+    <!-- Feature Grid (Optional) -->
+    <section class="even-column container">
+      <div class="grid">
+        <article>
+          <h4>🔄 Многолетний</h4>
+          <p>Не требует ежегодной замены: один календарь на всю жизнь.</p>
+        </article>
+        <article>
+          <h4>🌍 В гармонии с природой</h4>
+          <p>Сезоны синхронизированы с астрономическими событиями.</p>
+        </article>
+        <article>
+          <h4>📐 Точный</h4>
+          <p>Ошибка составляет менее 1 дня за 50&nbsp;000 лет.</p>
+        </article>
+      </div>
+      <div class="grid">
+        <article>
+          <h4>📅 Цикличное летоисчисление</h4>
+          <p>
+            Время — это спираль, а не линия, даты повторяются через 128 лет.
+          </p>
+        </article>
+        <article>
+          <h4>🔥 Фестиваль солнцестояний</h4>
+          <p>Новый год не просто праздник, а 5–6 дней вне сезонов.</p>
+        </article>
+        <article>
+          <h4>🔢 Математическая гармония</h4>
+          <p>
+            Не просто календарь, а математическое заклинание, превращающее время
+            в песню.
+          </p>
+        </article>
+      </div>
+    </section>
+    <section>
+      <article>
+        <details name="faq" open>
+          <summary>Почему нет месяцев?</summary>
+          <p>
+            Если люди будет использовать декады, то в названиях дней недели нет
+            особой нужды, т.к. календарь постоянный и всегда понятно какой это
+            день по последней цифре.
+          </p>
+        </details>
+        <hr />
 
+        <details name="faq">
+          <summary>Почему нет названий дней недели?</summary>
+          <p>
+            Если люди использовать 10-дневные недели (декады), то в названиях дней недели нет
+            особой нужды, т.к. календарь постоянный и всегда понятно какой это
+            день по последней цифре.
+          </p>
+        </details>
+        <hr />
 
-		</script>
-	</body>
-</html>
+        <details name="faq">
+          <summary>Это серьёзно?</summary>
+          <ul>
+            <li>...</li>
+            <li>...</li>
+          </ul>
+        </details>
+      </article>
+    </section>
+  </main>
+</Layout>

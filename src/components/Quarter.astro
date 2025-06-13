@@ -1,4 +1,6 @@
 ---
+import Day from './Day.astro';
+
 interface Props {
   title: string;
 }
@@ -18,11 +20,17 @@ const items = [...Array(DAYS_IN_QUARTER).keys()].map(i => {
 <!-- dummy element for style loading -->
 <div class="cols-5 cols-10 cols-6 cols-9"></div>
 
+<div class="flex-col">
+
 <h4>{title}</h4>
 
-<div class={`grid calgrid`}>
+<div class={`grid transition calgrid`}>
   <!-- Your grid items here -->
   {items.map(item => (
-    <div class="grid-item">{item.name}</div>
+    <Day num={item.name}>
+      
+    </Day>
   ))}
+</div>
+
 </div>

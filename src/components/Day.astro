@@ -1,0 +1,12 @@
+---
+interface Props {
+  num: number;
+}
+
+const { num } = Astro.props;
+
+---
+<div class="m-12 grid">
+    <div>{num}</div>
+    <slot></slot>
+</div>
