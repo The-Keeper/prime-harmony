@@ -15,7 +15,7 @@ function toOrdinal(number: number): string {
   }
 
   const rules = new Intl.PluralRules("en", { type: "ordinal" });
-  const suffixes: Record<Intl.LDMLPluralRule, OrdinalSuffix> = {
+  const suffixes: Partial<Record<Intl.LDMLPluralRule, OrdinalSuffix>> = {
     one: "st",
     two: "nd",
     few: "rd",
