@@ -1,20 +1,36 @@
 ---
 import ThemeToggle from "../components/ThemeToggle.astro";
-import Logo from '../assets/logo.svg';
+import Logo from "../assets/logo.svg";
 import LangSelect from "./LangSelect.astro";
 
-const currentLang = Astro.currentLocale;
+const currentLang = Astro.currentLocale || '';
 const availableLangs = {
-  "ru": "Русский",
-  "en": "English"
-}
+  ru: "Русский",
+  en: "English",
+};
 
-const whatName = {
-  "ru": "Что это?",
-  "en": "What is this?"
-}
+const whatName: Record<string, string> = {
+  ru: "Что это?",
+  en: "What is this?",
+};
 
+export function toOrdinal(
+  number: number,
+  suffixes: Partial<Record<Intl.LDMLPluralRule, string>>,
+  locale = "en"
+): string {
+  if (Number.isNaN(number) || !Number.isFinite(number)) {
+    return number.toString();
+  }
+
+  const pluralRule = new Intl.PluralRules(locale, { type: "ordinal" }).select(
+    number
+  ) as Intl.LDMLPluralRule;
+
+  return number.toString() + (suffixes[pluralRule] ?? suffixes.other ?? "th");
+}
 ---
+
 <nav class="container-fluid">
   <ul>
     <li>
@@ -22,10 +38,19 @@ const whatName = {
     </li>
   </ul>
   <ul>
-    <li><a href="#what">{ whatName[currentLang] }</a></li>
+    <li><a href="#what">{whatName[currentLang]}</a></li>
   </ul>
   <ul>
-    {currentLang && <li><LangSelect currentLang={currentLang} availableLanguages={availableLangs}/></li>}
+    {
+      currentLang && (
+        <li>
+          <LangSelect
+            currentLang={currentLang}
+            availableLanguages={availableLangs}
+          />
+        </li>
+      )
+    }
     <li><ThemeToggle /></li>
   </ul>
 </nav>
