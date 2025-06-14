@@ -1,20 +1,20 @@
 ---
 import ThemeToggle from "../components/ThemeToggle.astro";
-import Logo from '../assets/logo.svg';
+import Logo from "../assets/logo.svg";
 import LangSelect from "./LangSelect.astro";
 
-const currentLang = Astro.currentLocale;
+const currentLang = Astro.currentLocale || '';
 const availableLangs = {
-  "ru": "Русский",
-  "en": "English"
-}
+  ru: "Русский",
+  en: "English",
+};
 
-const whatName = {
-  "ru": "Что это?",
-  "en": "What is this?"
-}
-
+const whatName: Record<string, string> = {
+  ru: "Что это?",
+  en: "What is this?",
+};
 ---
+
 <nav class="container-fluid">
   <ul>
     <li>
@@ -22,10 +22,19 @@ const whatName = {
     </li>
   </ul>
   <ul>
-    <li><a href="#what">{ whatName[currentLang] }</a></li>
+    <li><a href="#what">{whatName[currentLang]}</a></li>
   </ul>
   <ul>
-    {currentLang && <li><LangSelect currentLang={currentLang} availableLanguages={availableLangs}/></li>}
+    {
+      currentLang && (
+        <li>
+          <LangSelect
+            currentLang={currentLang}
+            availableLanguages={availableLangs}
+          />
+        </li>
+      )
+    }
     <li><ThemeToggle /></li>
   </ul>
 </nav>

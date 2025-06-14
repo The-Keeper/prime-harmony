@@ -3,28 +3,20 @@ import Layout from "../../layouts/Layout.astro";
 import { PrimeHarmonyDate } from "../../lib/calendar";
 import SeasonCalendar from "../../components/SeasonCalendar.astro";
 import "../../styles/main.css";
+import { createOrdinalFunction } from "../../utils/ordinals";
 
 const today = PrimeHarmonyDate.fromDate(new Date());
 const local = today.toLocalDateInfo();
 
-type OrdinalSuffix = "st" | "nd" | "rd" | "th";
+const suffixes = {
+  one: "st",
+  two: "nd",
+  few: "rd",
+  other: "th",
+};
 
-function toOrdinal(number: number): string {
-  if (Number.isNaN(number) || !Number.isFinite(number)) {
-    return number.toString();
-  }
+const toOrdinal = createOrdinalFunction('en', suffixes)
 
-  const rules = new Intl.PluralRules("en", { type: "ordinal" });
-  const suffixes: Record<Intl.LDMLPluralRule, OrdinalSuffix> = {
-    one: "st",
-    two: "nd",
-    few: "rd",
-    other: "th",
-  };
-
-  const pluralRule = rules.select(number) as Intl.LDMLPluralRule;
-  return number.toString() + suffixes[pluralRule];
-}
 ---
 
 <Layout title="Prime Harmony">
@@ -32,12 +24,13 @@ function toOrdinal(number: number): string {
     <section class="hero grid">
       <div class="even-column centered">
         <h1>
-          {toOrdinal(local.day)} day of Season&nbsp;{local.season}, year {
-            local.year
-          }
+          {toOrdinal(local.day)} day of Season&nbsp;{local.season},
+          year {local.year}
         </h1>
         <p>
-          Year {local.cycleInfo.year} of {toOrdinal(local.cycleInfo.cycle)} cycle
+          Year {local.cycleInfo.year} of {
+            toOrdinal(local.cycleInfo.cycle)
+          } cycle
         </p>
         <a role="button" href="#what">What is this?</a>
       </div>
