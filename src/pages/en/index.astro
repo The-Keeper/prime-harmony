@@ -20,8 +20,6 @@ function toOrdinal(number: number): string {
     two: "nd",
     few: "rd",
     other: "th",
-    zero: "th", // Included for completeness
-    many: "th", // Included for completeness
   };
 
   const pluralRule = rules.select(number) as Intl.LDMLPluralRule;
