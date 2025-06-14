@@ -13,22 +13,6 @@ const whatName: Record<string, string> = {
   ru: "Что это?",
   en: "What is this?",
 };
-
-export function toOrdinal(
-  number: number,
-  suffixes: Partial<Record<Intl.LDMLPluralRule, string>>,
-  locale = "en"
-): string {
-  if (Number.isNaN(number) || !Number.isFinite(number)) {
-    return number.toString();
-  }
-
-  const pluralRule = new Intl.PluralRules(locale, { type: "ordinal" }).select(
-    number
-  ) as Intl.LDMLPluralRule;
-
-  return number.toString() + (suffixes[pluralRule] ?? suffixes.other ?? "th");
-}
 ---
 
 <nav class="container-fluid">

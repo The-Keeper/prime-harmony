@@ -3,7 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 import { PrimeHarmonyDate } from "../../lib/calendar";
 import SeasonCalendar from "../../components/SeasonCalendar.astro";
 import "../../styles/main.css";
-import { toOrdinal } from "../../components/Navbar.astro";
+import { createOrdinalFunction } from "../../utils/ordinals";
 
 const today = PrimeHarmonyDate.fromDate(new Date());
 const local = today.toLocalDateInfo();
@@ -14,6 +14,9 @@ const suffixes = {
   few: "rd",
   other: "th",
 };
+
+const toOrdinal = createOrdinalFunction('en', suffixes)
+
 ---
 
 <Layout title="Prime Harmony">
@@ -21,12 +24,12 @@ const suffixes = {
     <section class="hero grid">
       <div class="even-column centered">
         <h1>
-          {toOrdinal(local.day, suffixes)} day of Season&nbsp;{local.season},
+          {toOrdinal(local.day)} day of Season&nbsp;{local.season},
           year {local.year}
         </h1>
         <p>
           Year {local.cycleInfo.year} of {
-            toOrdinal(local.cycleInfo.cycle, suffixes)
+            toOrdinal(local.cycleInfo.cycle)
           } cycle
         </p>
         <a role="button" href="#what">What is this?</a>
@@ -35,7 +38,7 @@ const suffixes = {
       <div class="container">
         <SeasonCalendar
           currentDay={local.day}
-          title={`${toOrdinal(local.season, suffixes)} season`}
+          title={`${toOrdinal(local.season)} season`}
         />
       </div>
     </section>
