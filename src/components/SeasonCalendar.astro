@@ -1,0 +1,74 @@
+---
+import { SEASON_LENGTH, type PrimeHarmonyDate } from '../lib/calendar';
+
+interface Props {
+  currentDay: number,
+  title?: string,
+}
+
+const { currentDay, title } = Astro.props;
+
+---
+
+<div class="calendar-container">    
+    {title && <div class="title">{title}</div>}
+
+    <div class="days-grid">
+        {/* Days of the month */}
+        {Array.from({ length: SEASON_LENGTH }).map((_, i) => {
+            const day = i + 1;
+            let dayClass = "day";
+            
+            if (day < currentDay) dayClass += " past-day";
+            else if (day > currentDay) dayClass += " future-day";
+            else dayClass += " current-day";
+            
+            return <div class={dayClass}>{day}</div>;
+        })}
+    </div>
+</div>
+
+<style>
+    .calendar-container {
+        font-family: Arial, sans-serif;
+        max-width: 400px;
+        margin: 1rem auto;
+        /* font-size: max(5px, 1rem); Won't go below 16px */
+
+    }
+    .title {
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 10px;
+        font-size: 1.2em;
+    }
+    .days-grid {
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        grid-template-rows: repeat(9, 1fr);
+        gap: 0.3rem;
+    }
+    .day {
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.3rem;
+        font-size: 1.1em;
+    }
+    .past-day {
+        background-color: color-mix(in srgb, var(--pico-secondary-background) 50%, transparent);
+        color: var(--pico-secondary-inverse);
+    }
+    
+    .future-day {
+        // background-color: var(--secondary);
+        /* color: #aaa; */
+    }
+    .current-day {
+        background-color: var(--pico-primary-background);
+        color: white;
+        font-weight: bold;
+    }
+    
+</style>

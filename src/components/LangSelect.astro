@@ -1,0 +1,36 @@
+---
+import { LanguagesIcon } from '@lucide/astro';
+
+
+interface Props {
+  currentLang: string,
+  availableLanguages: Record<string, string>,
+}
+
+const { currentLang, availableLanguages } = Astro.props;
+const baseUrl = import.meta.env.BASE_URL || '/';
+---
+
+<details class="dropdown">
+  <summary role="button">
+    <LanguagesIcon />
+  </summary>
+    <ul role="listbox">
+      {
+        Object.entries(availableLanguages).map(([langCode, langName]) => (
+          <li>
+            <a href={`${baseUrl}/${langCode}`}>
+              {langName}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+</details>
+
+<style>
+  .language-selector {
+    margin-left: auto;
+  }
+</style>

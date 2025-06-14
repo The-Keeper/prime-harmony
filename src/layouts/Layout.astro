@@ -1,0 +1,80 @@
+---
+import Navbar from '../components/Navbar.astro'
+
+const currentLocale = Astro.currentLocale;
+const { title } = Astro.props;
+---
+<style is:global lang="scss">
+
+// $primary-500: #6d28d9;
+// $secondary-500: #4b5563;
+// $accent-500: #db2777;
+
+// Pico lightweight version
+@use "@picocss/pico/scss/pico" with (
+  $theme-color: "jade",
+  $enable-semantic-container: true,
+  $enable-classes: true,
+  $modules: (
+    "content/code": false,
+    "forms/input-color": false,
+    "forms/input-date": false,
+    "forms/input-file": false,
+    "forms/input-range": false,
+    "forms/input-search": false,
+    "components/accordion": true,
+    "components/card": false,
+    "components/dropdown": true,
+    "components/loading": false,
+    "components/modal": false,
+    "components/nav": true,
+    "components/progress": false,
+    "components/tooltip": false,
+    "utilities/accessibility": false,
+    "utilities/reduce-motion": false
+  )
+);
+
+:root {
+      --pico-font-family: Arial, sans-serif;
+}
+
+
+html {
+  scroll-behavior: smooth;
+}
+
+</style>
+<html lang={currentLocale}>
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+	</head>
+	<body class="bg-background text-text">
+        <script is:inline>
+            const theme = (() => {
+                if (typeof localStorage !== "undefined" && localStorage.getItem("theme")) {
+                return localStorage.getItem("theme");
+                }
+                if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+                return "dark";
+                }
+                return "light";
+            })();
+
+            if (theme === "light") {
+                document.documentElement.classList.remove("dark");
+            } else {
+                document.documentElement.classList.add("dark");
+            }
+            window.localStorage.setItem("theme", theme);
+            </script>
+
+        <Navbar></Navbar>
+        <slot></slot>
+	</body>
+</html>
+

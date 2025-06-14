@@ -1,0 +1,36 @@
+---
+import Day from './Day.astro';
+
+interface Props {
+  title: string;
+}
+
+const DAYS_IN_QUARTER = 90;
+
+const { title } = Astro.props;
+
+const items = [...Array(DAYS_IN_QUARTER).keys()].map(i => {
+    return {
+        name: i+1
+    }
+})
+
+---
+
+<!-- dummy element for style loading -->
+<div class="cols-5 cols-10 cols-6 cols-9"></div>
+
+<div class="flex-col">
+
+<h4>{title}</h4>
+
+<div class={`grid transition calgrid`}>
+  <!-- Your grid items here -->
+  {items.map(item => (
+    <Day num={item.name}>
+      
+    </Day>
+  ))}
+</div>
+
+</div>
