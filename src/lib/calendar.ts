@@ -160,4 +160,17 @@ export class PrimeHarmonyDate {
         const time_res = formatUTCTime(new Date(this.ms));
         return `y${this.year}s${this.season}d${this.day + 1} ${time_res} (c${cycle}y${year})`;
     }
+
+    public toLocalDateInfo() {
+        const offset = new Date().getTimezoneOffset();
+        const date = this.toDate()
+        const res_date = date;
+        // console.log({offset, res_date})
+        res_date.setMinutes ( date.getMinutes() - offset );
+        const primeCalDate = PrimeHarmonyDate.fromDate(res_date);
+        const cycleInfo = primeCalDate.cycleInfo();
+        const { year, day, season } = primeCalDate;
+        return { year, day, season, cycleInfo }
+
+    }
 }

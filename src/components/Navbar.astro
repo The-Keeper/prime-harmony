@@ -9,6 +9,11 @@ const availableLangs = {
   "en": "English"
 }
 
+const whatName = {
+  "ru": "Что это?",
+  "en": "What is this?"
+}
+
 ---
 <nav class="container-fluid">
   <ul>
@@ -17,8 +22,7 @@ const availableLangs = {
     </li>
   </ul>
   <ul>
-    <li><a href="#">Services</a></li>
-    <li><a href="#">Products</a></li>
+    <li><a href="#what">{ whatName[currentLang] }</a></li>
   </ul>
   <ul>
     {currentLang && <li><LangSelect currentLang={currentLang} availableLanguages={availableLangs}/></li>}

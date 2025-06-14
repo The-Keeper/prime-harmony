@@ -1,68 +1,31 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { Image } from "astro:assets";
-import heroImage from "../../assets/hero.png";
-import { CalendarHeartIcon, EarthIcon } from "@lucide/astro";
-import { ClientRouter } from "astro:transitions";
 import { PrimeHarmonyDate } from "../../lib/calendar";
 import SeasonCalendar from "../../components/SeasonCalendar.astro";
- 
+import "../../styles/main.css";
 
 const today = PrimeHarmonyDate.fromDate(new Date());
-const cycleInfo = today.cycleInfo();
+const local = today.toLocalDateInfo();
 ---
-
-<style>
-  /* main > *:nth-child(odd) {
-      background-color: #ff000015;  
-    }
-
-    main > *:nth-child(even) {
-      background-color: #00000015; 
-    } */
-
-  /* Custom Hero Styling */
-  section {
-    min-height: 80vh;
-    border-radius: 1rem; /* 16px */
-  }
-
-  .even-column {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-  }
-
-  .hero {
-    align-items: center;
-    padding: 2rem 0;
-    /* background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); */
-  }
-
-  .centered {
-    text-align: center;
-    justify-content: center;  /* Horizontal centering */
-    align-items: center;      /* Vertical centering */
-  }
-
-  .smallcal {
-    font-size: 0.6rem;
-    width: 12rem;
-  }
-
-</style>
 
 <Layout title="Первичная гармония">
   <main class="container">
     <section class="hero grid">
       <div class="even-column centered">
-        <h1>{today.day}-й день {today.season}-го&nbsp;сезона {today.year}&nbsp;года</h1>
-        <p>{cycleInfo.year}-й год {cycleInfo.cycle}-го цикла</p>
+        <h1>
+          {local.day}-й день {local.season}-го&nbsp;сезона {
+            local.year
+          }&nbsp;года
+        </h1>
+        <p>{local.cycleInfo.year}-й год {local.cycleInfo.cycle}-го цикла</p>
         <a role="button" href="#what">Что это?</a>
       </div>
 
       <div class="container">
-          <SeasonCalendar currentDay={today.day} title={`${today.season}-й сезон`} />
+        <SeasonCalendar
+          currentDay={local.day}
+          title={`${local.season}-й сезон`}
+        />
       </div>
     </section>
     <section id="what" class="even-column container">
@@ -77,16 +40,16 @@ const cycleInfo = today.cycleInfo();
             <li>Сезоны одинаковой длины</li>
           </ul>
         </div>
-          <div class="smallcal">
+        <div class="smallcal">
           <SeasonCalendar currentDay={0} />
-          </div>
+        </div>
       </div>
       <div class="grid">
-          <h3>Как это работает?</h3>
-          <ul>
-            <li>Четыре сезона по 90 дней + 5–6 праздичных дней</li>
-            <li>Високосные год, когда номер года в цикле — простое число</li>
-          </ul>
+        <h3>Как это работает?</h3>
+        <ul>
+          <li>Четыре сезона по 90 дней + 5–6 праздичных дней</li>
+          <li>Високосные год, когда номер года в цикле — простое число</li>
+        </ul>
       </div>
     </section>
 
@@ -131,9 +94,10 @@ const cycleInfo = today.cycleInfo();
         <details name="faq" open>
           <summary>Почему нет месяцев?</summary>
           <p>
-            Если люди будет использовать декады, то в названиях дней недели нет
-            особой нужды, т.к. календарь постоянный и всегда понятно какой это
-            день по последней цифре.
+            Каждый сезон можно было бы разделить на три месяца, и в таком случае
+            получить привычные 12 месяцев, однако в делении нет особой
+            необходимости, посколько длина сезонов одинакова и удобно делится на
+            10.
           </p>
         </details>
         <hr />
@@ -141,9 +105,9 @@ const cycleInfo = today.cycleInfo();
         <details name="faq">
           <summary>Почему нет названий дней недели?</summary>
           <p>
-            Если люди использовать 10-дневные недели (декады), то в названиях дней недели нет
-            особой нужды, т.к. календарь постоянный и всегда понятно какой это
-            день по последней цифре.
+            Если люди использовать 10-дневные недели (декады), то в названиях
+            дней недели нет особой необходимости, т.к. календарь постоянный и
+            всегда понятно какой это день по последней цифре.
           </p>
         </details>
         <hr />
@@ -151,7 +115,7 @@ const cycleInfo = today.cycleInfo();
         <details name="faq">
           <summary>Это серьёзно?</summary>
           <ul>
-            <li>...</li>
+            <li></li>
             <li>...</li>
           </ul>
         </details>

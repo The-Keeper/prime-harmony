@@ -1,16 +1,145 @@
 ---
+import Layout from "../../layouts/Layout.astro";
+import { PrimeHarmonyDate } from "../../lib/calendar";
+import SeasonCalendar from "../../components/SeasonCalendar.astro";
+import "../../styles/main.css";
 
+const today = PrimeHarmonyDate.fromDate(new Date());
+const local = today.toLocalDateInfo();
+
+type OrdinalSuffix = "st" | "nd" | "rd" | "th";
+
+function toOrdinal(number: number): string {
+  if (Number.isNaN(number) || !Number.isFinite(number)) {
+    return number.toString();
+  }
+
+  const rules = new Intl.PluralRules("en", { type: "ordinal" });
+  const suffixes: Record<Intl.LDMLPluralRule, OrdinalSuffix> = {
+    one: "st",
+    two: "nd",
+    few: "rd",
+    other: "th",
+    zero: "th", // Included for completeness
+    many: "th", // Included for completeness
+  };
+
+  const pluralRule = rules.select(number) as Intl.LDMLPluralRule;
+  return number.toString() + suffixes[pluralRule];
+}
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Prime Harmony</title>
-	</head>
-	<body>
-		<h1>Prime Harmony</h1>
-	</body>
-</html>
+<Layout title="Prime Harmony">
+  <main class="container">
+    <section class="hero grid">
+      <div class="even-column centered">
+        <h1>
+          {toOrdinal(local.day)} day of Season&nbsp;{local.season}, year {
+            local.year
+          }
+        </h1>
+        <p>
+          Year {local.cycleInfo.year} of {toOrdinal(local.cycleInfo.cycle)} cycle
+        </p>
+        <a role="button" href="#what">What is this?</a>
+      </div>
+
+      <div class="container">
+        <SeasonCalendar
+          currentDay={local.day}
+          title={`${toOrdinal(local.season)} season`}
+        />
+      </div>
+    </section>
+    <section id="what" class="even-column container">
+      <h2>What is this?</h2>
+
+      <div class="grid">
+        <div>
+          <h3>Calendar that is always up-to-date</h3>
+          <ul>
+            <li>Perennial system</li>
+            <li>128-year cycles with natural precision</li>
+            <li>Seasons of equal length</li>
+          </ul>
+        </div>
+        <div class="smallcal">
+          <SeasonCalendar currentDay={0} />
+        </div>
+      </div>
+      <div class="grid">
+        <h3>How does it work?</h3>
+        <ul>
+          <li>Four 90-day seasons + 5–6 holidays</li>
+          <li>Leap year is when year number in the cycle is prime</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Feature Grid (Optional) -->
+    <section class="even-column container">
+      <div class="grid">
+        <article>
+          <h4>🔄 Perennial</h4>
+          <p>You don't need to replace calendars.</p>
+        </article>
+        <article>
+          <h4>🌍 In harmony with nature</h4>
+          <p>Season synchronised to astronomical events.</p>
+        </article>
+        <article>
+          <h4>📐 Accurate</h4>
+          <p>Error accumulation is less than a day in 50 000 years.</p>
+        </article>
+      </div>
+      <div class="grid">
+        <article>
+          <h4>📅 Cyclical timekeeping</h4>
+          <p>Time is a spiral, not a line. Dates repeat each 128 years.</p>
+        </article>
+        <article>
+          <h4>🔥 Solstice festivals</h4>
+          <p>
+            New year is not just a holiday, but five or six out-of-season days.
+          </p>
+        </article>
+        <article>
+          <h4>🔢 Mathematical harmony</h4>
+          <p>Not just a calendar but a mathematical spell.</p>
+        </article>
+      </div>
+    </section>
+    <section>
+      <article>
+        <details name="faq" open>
+          <summary>Wny no months?</summary>
+          <p>
+            Each season could be divided into three months, in which case we
+            would get the usual 12 months, but there is no need for division, as
+            the length of the seasons is the same and is conveniently divided by
+            10.
+          </p>
+        </details>
+        <hr />
+
+        <details name="faq">
+          <summary>Why no day names?</summary>
+          <p>
+            If 10-day weeks (decades) are used, there is little need to name the
+            days of the week, as the calendar is constant and is always clear
+            what day it is by the last digit.
+          </p>
+        </details>
+        <hr />
+
+        <details name="faq">
+          <summary>Is this serious?</summary>
+          <ul>
+            <li></li>
+            <li>...</li>
+          </ul>
+        </details>
+      </article>
+    </section>
+  </main>
+</Layout>
