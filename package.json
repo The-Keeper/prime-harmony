@@ -10,12 +10,12 @@
   },
   "dependencies": {
     "@picocss/pico": "^2.1.1",
-    "astro": "^5.8.0"
+    "astro": "^5.9.3"
   },
   "devDependencies": {
     "@lucide/astro": "^0.511.0",
-    "sass": "^1.89.0",
-    "stylelint": "^16.19.1",
+    "sass": "^1.89.2",
+    "stylelint": "^16.20.0",
     "stylelint-config-recommended-scss": "^15.0.1",
     "stylelint-config-standard": "^38.0.0"
   }
