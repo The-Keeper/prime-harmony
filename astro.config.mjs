@@ -14,5 +14,15 @@ export default defineConfig({
             fallbackType: "rewrite",
         },
     },
+    vite: {
+        css: {
+            preprocessorOptions: {
+                scss: {
+                    // @picocss/pico@2.1.1 still uses the deprecated Sass if() function.
+                    silenceDeprecations: ["if-function"],
+                },
+            },
+        },
+    },
     // integrations: [UnoCSS(), svelte()],
 });

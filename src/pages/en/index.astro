@@ -17,6 +17,11 @@ const suffixes = {
 
 const toOrdinal = createOrdinalFunction('en', suffixes)
 
+const dayLabel =
+  local.season === 0
+    ? `${toOrdinal(local.day + 1)} festival day`
+    : `${toOrdinal(local.day + 1)} day of Season ${local.season}`;
+
 ---
 
 <Layout title="Prime Harmony">
@@ -24,8 +29,7 @@ const toOrdinal = createOrdinalFunction('en', suffixes)
     <section class="hero grid">
       <div class="even-column centered">
         <h1>
-          {toOrdinal(local.day)} day of Season&nbsp;{local.season},
-          year {local.year}
+          {dayLabel}, year {local.year}
         </h1>
         <p>
           Year {local.cycleInfo.year} of {
@@ -37,8 +41,10 @@ const toOrdinal = createOrdinalFunction('en', suffixes)
 
       <div class="container">
         <SeasonCalendar
-          currentDay={local.day}
-          title={`${toOrdinal(local.season)} season`}
+          currentDay={local.day + 1}
+          title={local.season === 0
+            ? "Solstice festival"
+            : `${toOrdinal(local.season)} season`}
         />
       </div>
     </section>
@@ -55,7 +61,7 @@ const toOrdinal = createOrdinalFunction('en', suffixes)
           </ul>
         </div>
         <div class="smallcal">
-          <SeasonCalendar currentDay={0} />
+          <SeasonCalendar />
         </div>
       </div>
       <div class="grid">
@@ -76,11 +82,16 @@ const toOrdinal = createOrdinalFunction('en', suffixes)
         </article>
         <article>
           <h4>🌍 In harmony with nature</h4>
-          <p>Season synchronised to astronomical events.</p>
+          <p>
+            Seasons are anchored to the winter solstice, and the mean year
+            matches the mean tropical year.
+          </p>
         </article>
         <article>
           <h4>📐 Accurate</h4>
-          <p>Error accumulation is less than a day in 50 000 years.</p>
+          <p>
+            Drift from the mean tropical year is less than a day in 50,000 years.
+          </p>
         </article>
       </div>
       <div class="grid">
@@ -89,9 +100,10 @@ const toOrdinal = createOrdinalFunction('en', suffixes)
           <p>Time is a spiral, not a line. Dates repeat each 128 years.</p>
         </article>
         <article>
-          <h4>🔥 Solstice festivals</h4>
+          <h4>🔥 Solstice festival</h4>
           <p>
-            New year is not just a holiday, but five or six out-of-season days.
+            New year is five or six out-of-season days placed around the winter
+            solstice.
           </p>
         </article>
         <article>
@@ -103,7 +115,7 @@ const toOrdinal = createOrdinalFunction('en', suffixes)
     <section>
       <article>
         <details name="faq" open>
-          <summary>Wny no months?</summary>
+          <summary>Why no months?</summary>
           <p>
             Each season could be divided into three months, in which case we
             would get the usual 12 months, but there is no need for division, as
@@ -124,10 +136,35 @@ const toOrdinal = createOrdinalFunction('en', suffixes)
         <hr />
 
         <details name="faq">
+          <summary>Why are the seasons equal?</summary>
+          <p>
+            Equal 90-day seasons keep the calendar simple and the mean year
+            accurate, but they cannot all begin exactly at an equinox or
+            solstice: the real astronomical seasons are slightly unequal.
+          </p>
+        </details>
+        <hr />
+
+        <details name="faq">
           <summary>Is this serious?</summary>
           <ul>
-            <li></li>
-            <li>...</li>
+            <li>
+              It is a mathematical and design experiment, not a replacement for
+              the civil calendar.
+            </li>
+            <li>
+              It has no OS, library or standards support; familiar months, weeks
+              and holiday dates are tied to the Gregorian calendar.
+            </li>
+            <li>
+              Its practical use is as a secondary, seasonal calendar: seasons
+              start at the winter solstice and the mean year closely matches the
+              tropical year.
+            </li>
+            <li>
+              The math is real: 31 leap years per 128-year cycle, and
+              31/128 ≈ 0.24219 is a convergent of the tropical-year fraction.
+            </li>
           </ul>
         </details>
       </article>

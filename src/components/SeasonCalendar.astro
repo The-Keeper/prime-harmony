@@ -1,8 +1,8 @@
 ---
-import { SEASON_LENGTH, type PrimeHarmonyDate } from '../lib/calendar';
+import { SEASON_LENGTH } from '../lib/calendar';
 
 interface Props {
-  currentDay: number,
+  currentDay?: number,
   title?: string,
 }
 
@@ -19,9 +19,11 @@ const { currentDay, title } = Astro.props;
             const day = i + 1;
             let dayClass = "day";
             
-            if (day < currentDay) dayClass += " past-day";
-            else if (day > currentDay) dayClass += " future-day";
-            else dayClass += " current-day";
+            if (currentDay !== undefined) {
+                if (day < currentDay) dayClass += " past-day";
+                else if (day > currentDay) dayClass += " future-day";
+                else dayClass += " current-day";
+            }
             
             return <div class={dayClass}>{day}</div>;
         })}
@@ -62,7 +64,7 @@ const { currentDay, title } = Astro.props;
     }
     
     .future-day {
-        // background-color: var(--secondary);
+        /* background-color: var(--secondary); */
         /* color: #aaa; */
     }
     .current-day {
