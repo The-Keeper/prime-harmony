@@ -1,4 +1,6 @@
 ---
+import SeasonCalendar from "./SeasonCalendar.astro";
+
 interface Props {
   locale?: string;
 }
@@ -15,9 +17,6 @@ const t = isRu
       season: "Сезон",
       festival: "Фестиваль",
       seasonN: (n: number) => `${n}-й сезон`,
-      day: "День",
-      today: "Сегодня",
-      invalidDate: "Некорректная дата",
       invalidCalendarDate: "Некорректная дата календаря",
     }
   : {
@@ -28,162 +27,51 @@ const t = isRu
       season: "Season",
       festival: "Festival",
       seasonN: (n: number) => `Season ${n}`,
-      day: "Day",
-      today: "Today",
-      invalidDate: "Invalid date",
       invalidCalendarDate: "Invalid calendar date",
     };
 
 const seasons = [0, 1, 2, 3, 4];
-const days = Array.from({ length: 90 }, (_, i) => i + 1);
 ---
 
 <div
-  class="date-converter"
   data-date-converter
   data-locale={isRu ? "ru" : "en"}
-  data-msg-invalid-date={t.invalidDate}
   data-msg-invalid-calendar-date={t.invalidCalendarDate}
 >
-  <div class="converter-tabs" role="group">
+  <div role="group">
     <button type="button" data-mode="g2p" aria-pressed="true">{t.g2p}</button>
     <button type="button" data-mode="p2g" aria-pressed="false" class="outline">{t.p2g}</button>
   </div>
 
-  <div class="converter-panel" data-panel="g2p">
+  <div data-panel="g2p">
     <label>
       {t.gregorianDate}
       <input type="date" data-gregorian />
     </label>
-    <output data-output aria-live="polite"></output>
+    <p><output data-prime-output aria-live="polite"></output></p>
   </div>
 
-  <div class="converter-panel" data-panel="p2g" hidden>
-    <div class="prime-year-row">
+  <div data-panel="p2g" hidden>
+    <div class="grid">
       <label>
         {t.year}
-        <input type="number" step="1" data-prime-year />
+        <input type="number" step="1" data-year />
       </label>
-      <div class="steppers" role="group">
-        <button type="button" data-year-step="-1" aria-label="-1">&minus;</button>
-        <button type="button" data-year-step="1" aria-label="+1">+</button>
-      </div>
-      <button type="button" class="outline" data-today>{t.today}</button>
+      <label>
+        {t.season}
+        <select data-season>
+          {seasons.map((value) => (
+            <option value={value}>{value === 0 ? t.festival : t.seasonN(value)}</option>
+          ))}
+        </select>
+      </label>
     </div>
 
-    <div class="picker-block">
-      <span class="picker-label">{t.season}</span>
-      <div class="season-picker" role="group" data-season-picker>
-        {seasons.map((season) => (
-          <button type="button" data-season={season} aria-pressed={season === 1}>
-            {season === 0 ? t.festival : t.seasonN(season)}
-          </button>
-        ))}
-      </div>
-    </div>
+    <SeasonCalendar interactive />
 
-    <div class="picker-block">
-      <span class="picker-label">{t.day}</span>
-      <div class="day-picker" data-day-picker>
-        {days.map((day) => (
-          <button type="button" data-day={day} aria-pressed={day === 1}>{day}</button>
-        ))}
-      </div>
-    </div>
-
-    <output data-output aria-live="polite"></output>
+    <p><output data-gregorian-output aria-live="polite"></output></p>
   </div>
 </div>
-
-<style>
-  .date-converter {
-    display: grid;
-    gap: 0.75rem;
-    margin: 1rem 0;
-    max-width: 34rem;
-  }
-  .converter-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  .converter-tabs button {
-    margin: 0;
-  }
-  .converter-panel {
-    display: grid;
-    gap: 0.75rem;
-  }
-  .converter-panel[hidden] {
-    display: none;
-  }
-  .prime-year-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: end;
-    gap: 0.5rem;
-  }
-  .prime-year-row label {
-    flex: 1 1 8rem;
-    margin: 0;
-  }
-  .steppers {
-    display: flex;
-    gap: 0.25rem;
-  }
-  .steppers button,
-  .prime-year-row > button {
-    margin: 0;
-  }
-  .picker-block {
-    display: grid;
-    gap: 0.3rem;
-  }
-  .picker-label {
-    font-size: 0.85rem;
-    opacity: 0.8;
-  }
-  .season-picker {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem;
-  }
-  .day-picker {
-    display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    gap: 0.25rem;
-  }
-  .season-picker button,
-  .day-picker button {
-    margin: 0;
-    width: auto;
-    padding: 0.35rem 0.5rem;
-    font-size: 0.85rem;
-    line-height: 1;
-    box-shadow: none;
-    background: transparent;
-    border: 1px solid var(--pico-muted-border-color);
-    color: inherit;
-  }
-  .day-picker button {
-    padding: 0;
-    aspect-ratio: 1;
-  }
-  .season-picker button[aria-pressed="true"],
-  .day-picker button[aria-pressed="true"] {
-    background: var(--pico-primary-background);
-    border-color: var(--pico-primary-background);
-    color: white;
-    font-weight: bold;
-  }
-  .day-picker button[hidden] {
-    display: none;
-  }
-  .date-converter output {
-    display: block;
-    font-weight: bold;
-  }
-</style>
 
 <script>
   import { PrimeHarmonyDate, isLeapYear } from "../lib/calendar";
@@ -206,17 +94,16 @@ const days = Array.from({ length: 90 }, (_, i) => i + 1);
 
   document.querySelectorAll("[data-date-converter]").forEach((root) => {
     const locale = root.dataset.locale === "ru" ? "ru" : "en";
-    const msgInvalidDate = root.dataset.msgInvalidDate;
     const msgInvalidCalendarDate = root.dataset.msgInvalidCalendarDate;
 
     const tabs = root.querySelectorAll("[data-mode]");
     const panels = root.querySelectorAll("[data-panel]");
     const gregorianInput = root.querySelector("[data-gregorian]");
-    const gregorianOutput = root.querySelector('[data-panel="g2p"] [data-output]');
-    const yearInput = root.querySelector("[data-prime-year]");
-    const seasonButtons = root.querySelectorAll("[data-season]");
-    const dayButtons = root.querySelectorAll("[data-day]");
-    const primeOutput = root.querySelector('[data-panel="p2g"] [data-output]');
+    const primeOutput = root.querySelector("[data-prime-output]");
+    const gregorianOutput = root.querySelector("[data-gregorian-output]");
+    const yearInput = root.querySelector("[data-year]");
+    const seasonSelect = root.querySelector("[data-season]");
+    const calendar = root.querySelector('[data-panel="p2g"] [data-season-calendar]');
 
     const state = { year: 0, season: 1, day: 1 };
 
@@ -234,109 +121,75 @@ const days = Array.from({ length: 90 }, (_, i) => i + 1);
     const dayCount = () =>
       state.season === 0 ? (isLeapYear(state.year) ? 6 : 5) : 90;
 
-    const convertGregorian = () => {
-      const value = gregorianInput.value;
-      if (!value) {
-        gregorianOutput.textContent = "";
-        return;
-      }
-      const [year, month, day] = value.split("-").map(Number);
-      if (!year || !month || !day) {
-        gregorianOutput.textContent = msgInvalidDate;
-        return;
-      }
-      const date = new Date(Date.UTC(year, month - 1, day));
-      gregorianOutput.textContent = formatPrime(PrimeHarmonyDate.fromDate(date), locale);
+    const syncCalendar = () => {
+      calendar.dispatchEvent(
+        new CustomEvent("season-calendar:set", {
+          detail: { days: dayCount(), day: state.day },
+        }),
+      );
     };
 
-    const updatePrime = () => {
+    const updateGregorian = () => {
       try {
         const ph = new PrimeHarmonyDate(state.year, state.season, state.day - 1);
-        primeOutput.textContent = ph.toDate().toISOString().slice(0, 10);
+        gregorianOutput.textContent = ph.toDate().toISOString().slice(0, 10);
       } catch {
-        primeOutput.textContent = msgInvalidCalendarDate;
+        gregorianOutput.textContent = msgInvalidCalendarDate;
       }
     };
 
-    const renderPicker = () => {
+    const sync = () => {
       const max = dayCount();
       if (state.day > max) state.day = max;
-
-      seasonButtons.forEach((button) => {
-        button.setAttribute("aria-pressed", String(Number(button.dataset.season) === state.season));
-      });
-      dayButtons.forEach((button) => {
-        const day = Number(button.dataset.day);
-        button.hidden = day > max;
-        button.setAttribute("aria-pressed", String(day === state.day));
-      });
+      if (state.day < 1) state.day = 1;
+      yearInput.value = String(state.year);
+      seasonSelect.value = String(state.season);
+      syncCalendar();
+      updateGregorian();
     };
 
-    const refresh = () => {
-      renderPicker();
-      updatePrime();
+    const convertGregorian = () => {
+      const value = gregorianInput.value;
+      const [year, month, day] = value.split("-").map(Number);
+      if (!year || !month || !day) return;
+      const ph = PrimeHarmonyDate.fromDate(new Date(Date.UTC(year, month - 1, day)));
+      primeOutput.textContent = formatPrime(ph, locale);
     };
 
-    const setYear = (year) => {
-      if (!Number.isFinite(year)) return;
-      state.year = year;
-      yearInput.value = String(year);
-      refresh();
-    };
-
-    tabs.forEach((tab) => tab.addEventListener("click", () => setMode(tab.dataset.mode)));
-    gregorianInput.addEventListener("input", convertGregorian);
-    gregorianInput.addEventListener("change", convertGregorian);
+    calendar.addEventListener("season-calendar:change", (event) => {
+      state.day = Number(event.detail.day);
+      updateGregorian();
+    });
 
     yearInput.addEventListener("input", () => {
       const value = Number.parseInt(yearInput.value, 10);
       if (Number.isNaN(value)) return;
       state.year = value;
-      refresh();
+      sync();
     });
 
-    root.querySelectorAll("[data-year-step]").forEach((button) =>
-      button.addEventListener("click", () =>
-        setYear(state.year + Number(button.dataset.yearStep)),
-      ),
-    );
-
-    seasonButtons.forEach((button) =>
-      button.addEventListener("click", () => {
-        state.season = Number(button.dataset.season);
-        refresh();
-      }),
-    );
-
-    dayButtons.forEach((button) =>
-      button.addEventListener("click", () => {
-        state.day = Number(button.dataset.day);
-        refresh();
-      }),
-    );
-
-    root.querySelector("[data-today]").addEventListener("click", () => {
-      const now = new Date();
-      const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-      const today = PrimeHarmonyDate.fromDate(new Date(todayIso));
-      state.year = today.year;
-      state.season = today.season;
-      state.day = today.day + 1;
-      yearInput.value = String(state.year);
-      refresh();
+    seasonSelect.addEventListener("change", () => {
+      state.season = Number(seasonSelect.value);
+      sync();
     });
+
+    tabs.forEach((tab) => tab.addEventListener("click", () => setMode(tab.dataset.mode)));
+    gregorianInput.addEventListener("input", convertGregorian);
+    gregorianInput.addEventListener("change", convertGregorian);
 
     const now = new Date();
     const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-    gregorianInput.value = todayIso;
     const today = PrimeHarmonyDate.fromDate(new Date(todayIso));
     state.year = today.year;
     state.season = today.season;
     state.day = today.day + 1;
-    yearInput.value = String(state.year);
-
+    gregorianInput.value = todayIso;
     setMode("g2p");
-    convertGregorian();
-    refresh();
+
+    // Wait for every component script to attach its listeners before syncing.
+    setTimeout(() => {
+      sync();
+      convertGregorian();
+    }, 0);
   });
 </script>

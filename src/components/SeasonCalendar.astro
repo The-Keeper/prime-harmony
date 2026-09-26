@@ -2,33 +2,111 @@
 import { SEASON_LENGTH } from '../lib/calendar';
 
 interface Props {
-  currentDay?: number,
+  currentDay?: number,   // 1-based
   title?: string,
+  interactive?: boolean, // read-only by default
+  days?: number,         // number of visible days, default SEASON_LENGTH
 }
 
-const { currentDay, title } = Astro.props;
+const { currentDay, title, interactive = false, days = SEASON_LENGTH } = Astro.props;
+
+const current = currentDay ?? (interactive ? 1 : undefined);
+const visibleDays = Math.min(Math.max(days, 1), SEASON_LENGTH);
 
 ---
 
-<div class="calendar-container">    
+<div
+    class="calendar-container"
+    data-season-calendar
+    data-interactive={interactive ? "true" : "false"}
+    data-current={current ?? 0}
+    data-days={visibleDays}
+>
     {title && <div class="title">{title}</div>}
 
     <div class="days-grid">
         {/* Days of the month */}
         {Array.from({ length: SEASON_LENGTH }).map((_, i) => {
             const day = i + 1;
+            const hidden = day > visibleDays;
+
             let dayClass = "day";
-            
-            if (currentDay !== undefined) {
-                if (day < currentDay) dayClass += " past-day";
-                else if (day > currentDay) dayClass += " future-day";
+            if (current !== undefined) {
+                if (day < current) dayClass += " past-day";
+                else if (day > current) dayClass += " future-day";
                 else dayClass += " current-day";
             }
-            
-            return <div class={dayClass}>{day}</div>;
+
+            if (interactive) {
+                return (
+                    <button
+                        type="button"
+                        class={dayClass}
+                        data-day={day}
+                        aria-pressed={day === current}
+                        hidden={hidden}
+                    >{day}</button>
+                );
+            }
+
+            return <div class={dayClass} hidden={hidden}>{day}</div>;
         })}
     </div>
 </div>
+
+<script>
+    document.querySelectorAll("[data-season-calendar]").forEach((root) => {
+        if (root.dataset.interactive !== "true") return;
+
+        const buttons = Array.from(root.querySelectorAll("[data-day]"));
+        const current = {
+            day: Number(root.dataset.current) || 1,
+            days: Number(root.dataset.days) || buttons.length,
+        };
+
+        const apply = () => {
+            buttons.forEach((button) => {
+                const day = Number(button.dataset.day);
+                const isCurrent = day === current.day;
+                button.hidden = day > current.days;
+                button.setAttribute("aria-pressed", String(isCurrent));
+                button.classList.toggle("past-day", day < current.day);
+                button.classList.toggle("future-day", day > current.day);
+                button.classList.toggle("current-day", isCurrent);
+            });
+            root.dataset.current = String(current.day);
+            root.dataset.days = String(current.days);
+        };
+
+        const emit = () => {
+            root.dispatchEvent(
+                new CustomEvent("season-calendar:change", {
+                    bubbles: true,
+                    detail: { day: current.day },
+                }),
+            );
+        };
+
+        buttons.forEach((button) =>
+            button.addEventListener("click", () => {
+                current.day = Number(button.dataset.day);
+                apply();
+                emit();
+            }),
+        );
+
+        root.addEventListener("season-calendar:set", (event) => {
+            const detail = event.detail ?? {};
+            if (detail.days != null) current.days = Number(detail.days);
+            if (detail.day != null) current.day = Number(detail.day);
+            if (current.day > current.days) current.day = current.days;
+            if (current.day < 1) current.day = 1;
+            apply();
+        });
+
+        apply();
+    });
+</script>
 
 <style>
     .calendar-container {
@@ -50,24 +128,37 @@ const { currentDay, title } = Astro.props;
         grid-template-rows: repeat(9, 1fr);
         gap: 0.3rem;
     }
-    .day {
+    .days-grid .day {
         aspect-ratio: 1;
         display: flex;
         align-items: center;
         justify-content: center;
         border-radius: 0.3rem;
         font-size: 1.1em;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: none;
+        color: inherit;
+        box-shadow: none;
+        text-decoration: none;
     }
-    .past-day {
+    .days-grid .day[hidden] {
+        display: none;
+    }
+    .days-grid button.day {
+        cursor: pointer;
+    }
+    .days-grid .past-day {
         background-color: color-mix(in srgb, var(--pico-secondary-background) 50%, transparent);
         color: var(--pico-secondary-inverse);
     }
     
-    .future-day {
+    .days-grid .future-day {
         /* background-color: var(--secondary); */
         /* color: #aaa; */
     }
-    .current-day {
+    .days-grid .current-day {
         background-color: var(--pico-primary-background);
         color: white;
         font-weight: bold;
