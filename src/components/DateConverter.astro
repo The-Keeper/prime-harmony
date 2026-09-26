@@ -21,7 +21,7 @@ const seasons = [0, 1, 2, 3, 4];
     >
   </div>
 
-  <div data-panel="g2p" class="grid">
+  <div data-panel="g2p" class="grid centered">
     <label>
       {t.gregorianDate}
       <input type="date" data-gregorian />
@@ -35,27 +35,31 @@ const seasons = [0, 1, 2, 3, 4];
   <div data-panel="p2g" hidden>
     <div class="grid">
       <div>
-        <label>
-          {t.year}
-          <input type="number" step="1" data-year />
-        </label>
-        <label>
-          {t.season}
-          <select data-season>
-            {
-              seasons.map((value) => (
-                <option value={value}>
-                  {value === 0 ? t.festival : formatSeasonTitle(value, locale)}
-                </option>
-              ))
-            }
-          </select>
-        </label>
+        <div class="grid">
+          <label>
+            {t.year}
+            <input type="number" step="1" data-year />
+          </label>
+          <label>
+            {t.season}
+            <select data-season>
+              {
+                seasons.map((value) => (
+                  <option value={value}>
+                    {value === 0
+                      ? t.festival
+                      : formatSeasonTitle(value, locale)}
+                  </option>
+                ))
+              }
+            </select>
+          </label>
+        </div>
+        <div class="grid hero centered">
+          <SeasonCalendar interactive />
 
-        <SeasonCalendar interactive />
-      </div>
-      <div class="centered">
-        <h3><output data-gregorian-output aria-live="polite"></output></h3>
+          <h3><output data-gregorian-output aria-live="polite"></output></h3>
+        </div>
       </div>
     </div>
   </div>
