@@ -168,13 +168,11 @@ export class PrimeHarmonyDate {
         return `y${this.year}s${this.season}d${this.day + 1} ${time_res} (c${cycle}y${year})`;
     }
 
-    public toLocalDateInfo() {
+    /** This instant shifted into the local timezone, so day boundaries match local midnight. */
+    public toLocalDate(): PrimeHarmonyDate {
         const date = this.toDate();
         const offset = date.getTimezoneOffset(); // offset for this instant, not "now"
         date.setMinutes(date.getMinutes() - offset);
-        const primeCalDate = PrimeHarmonyDate.fromDate(date);
-        const cycleInfo = primeCalDate.cycleInfo();
-        const { year, day, season } = primeCalDate;
-        return { year, day, season, cycleInfo }
+        return PrimeHarmonyDate.fromDate(date);
     }
 }

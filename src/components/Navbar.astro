@@ -1,18 +1,11 @@
 ---
-import ThemeToggle from "../components/ThemeToggle.astro";
+import ThemeToggle from "./ThemeToggle.astro";
 import Logo from "../assets/logo.svg";
 import LangSelect from "./LangSelect.astro";
+import { LANGUAGE_NAMES, getContent, type Locale } from "../lib/i18n";
 
-const currentLang = Astro.currentLocale || '';
-const availableLangs = {
-  ru: "Русский",
-  en: "English",
-};
-
-const whatName: Record<string, string> = {
-  ru: "Что это?",
-  en: "What is this?",
-};
+const currentLang = (Astro.currentLocale ?? "en") as Locale;
+const content = getContent(currentLang);
 ---
 
 <nav class="container-fluid">
@@ -22,7 +15,7 @@ const whatName: Record<string, string> = {
     </li>
   </ul>
   <ul>
-    <li><a href="#what">{whatName[currentLang]}</a></li>
+    <li><a href="#what">{content.nav.what}</a></li>
   </ul>
   <ul>
     {
@@ -30,11 +23,11 @@ const whatName: Record<string, string> = {
         <li>
           <LangSelect
             currentLang={currentLang}
-            availableLanguages={availableLangs}
+            availableLanguages={LANGUAGE_NAMES}
           />
         </li>
       )
     }
-    <li><ThemeToggle /></li>
+    <li><ThemeToggle locale={currentLang} /></li>
   </ul>
 </nav>

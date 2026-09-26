@@ -1,43 +1,19 @@
 ---
 import SeasonCalendar from "./SeasonCalendar.astro";
+import { formatSeasonTitle } from "../lib/format";
+import { getContent, type Locale } from "../lib/i18n";
 
 interface Props {
-  locale?: string;
+  locale?: Locale;
 }
 
 const { locale = "en" } = Astro.props;
-const isRu = locale === "ru";
-
-const t = isRu
-  ? {
-      g2p: "Григорианский → Первичная гармония",
-      p2g: "Первичная гармония → Григорианский",
-      gregorianDate: "Григорианская дата",
-      year: "Год",
-      season: "Сезон",
-      festival: "Фестиваль",
-      seasonN: (n: number) => `${n}-й сезон`,
-      invalidCalendarDate: "Некорректная дата календаря",
-    }
-  : {
-      g2p: "Gregorian → Prime Harmony",
-      p2g: "Prime Harmony → Gregorian",
-      gregorianDate: "Gregorian date",
-      year: "Year",
-      season: "Season",
-      festival: "Festival",
-      seasonN: (n: number) => `Season ${n}`,
-      invalidCalendarDate: "Invalid calendar date",
-    };
+const t = getContent(locale).convert.converter;
 
 const seasons = [0, 1, 2, 3, 4];
 ---
 
-<div
-  data-date-converter
-  data-locale={isRu ? "ru" : "en"}
-  data-msg-invalid-calendar-date={t.invalidCalendarDate}
->
+<div data-date-converter data-locale={locale}>
   <div role="group">
     <button type="button" data-mode="g2p" aria-pressed="true">{t.g2p}</button>
     <button type="button" data-mode="p2g" aria-pressed="false" class="outline"
@@ -45,7 +21,7 @@ const seasons = [0, 1, 2, 3, 4];
     >
   </div>
 
-  <div data-panel="g2p" class="grid centered">
+  <div data-panel="g2p" class="grid">
     <label>
       {t.gregorianDate}
       <input type="date" data-gregorian />
@@ -59,29 +35,27 @@ const seasons = [0, 1, 2, 3, 4];
   <div data-panel="p2g" hidden>
     <div class="grid">
       <div>
-        <div class="grid">
-          <label>
-            {t.year}
-            <input type="number" step="1" data-year />
-          </label>
-          <label>
-            {t.season}
-            <select data-season>
-              {
-                seasons.map((value) => (
-                  <option value={value}>
-                    {value === 0 ? t.festival : t.seasonN(value)}
-                  </option>
-                ))
-              }
-            </select>
-          </label>
-        </div>
-        <div class="grid hero centered">
-          <SeasonCalendar interactive />
+        <label>
+          {t.year}
+          <input type="number" step="1" data-year />
+        </label>
+        <label>
+          {t.season}
+          <select data-season>
+            {
+              seasons.map((value) => (
+                <option value={value}>
+                  {value === 0 ? t.festival : formatSeasonTitle(value, locale)}
+                </option>
+              ))
+            }
+          </select>
+        </label>
 
-          <h3><output data-gregorian-output aria-live="polite"></output></h3>
-        </div>
+        <SeasonCalendar interactive />
+      </div>
+      <div class="centered">
+        <h3><output data-gregorian-output aria-live="polite"></output></h3>
       </div>
     </div>
   </div>
@@ -89,41 +63,17 @@ const seasons = [0, 1, 2, 3, 4];
 
 <script>
   import { PrimeHarmonyDate, isLeapYear } from "../lib/calendar";
-  import { createOrdinalFunction } from "../utils/ordinals";
-
-  const toOrdinal = createOrdinalFunction("en", {
-    one: "st",
-    two: "nd",
-    few: "rd",
-    other: "th",
-  });
-
-  const formatPrime = (ph, locale) => {
-    const day = ph.day + 1;
-    if (locale === "ru") {
-      return ph.season === 0
-        ? `${day}-й праздничный день ${ph.year} года`
-        : `${day}-й день ${ph.season}-го сезона ${ph.year} года`;
-    }
-    return ph.season === 0
-      ? `${toOrdinal(day)} festival day, year ${ph.year}`
-      : `${toOrdinal(day)} day of Season ${ph.season}, year ${ph.year}`;
-  };
-
-  const formatCycle = (ph, locale) => {
-    const cycleInfo = ph.cycleInfo();
-    return locale === "ru"
-      ? `${cycleInfo.year}-й год ${cycleInfo.cycle}-го цикла`
-      : `Year ${cycleInfo.year} of ${toOrdinal(cycleInfo.cycle)} cycle`;
-  };
+  import {
+    formatCycle,
+    formatGregorianDate,
+    formatPrimeDate,
+  } from "../lib/format";
+  import { getContent } from "../lib/i18n";
 
   document.querySelectorAll("[data-date-converter]").forEach((root) => {
     const locale = root.dataset.locale === "ru" ? "ru" : "en";
-    const msgInvalidCalendarDate = root.dataset.msgInvalidCalendarDate;
-    const gregorianFormatter = new Intl.DateTimeFormat(locale, {
-      dateStyle: "long",
-      timeZone: "UTC",
-    });
+    const msgInvalidCalendarDate =
+      getContent(locale).convert.converter.invalidCalendarDate;
 
     const tabs = root.querySelectorAll("[data-mode]");
     const panels = root.querySelectorAll("[data-panel]");
@@ -171,7 +121,7 @@ const seasons = [0, 1, 2, 3, 4];
           state.season,
           state.day - 1,
         );
-        gregorianOutput.textContent = gregorianFormatter.format(ph.toDate());
+        gregorianOutput.textContent = formatGregorianDate(ph.toDate(), locale);
       } catch {
         gregorianOutput.textContent = msgInvalidCalendarDate;
       }
@@ -194,7 +144,7 @@ const seasons = [0, 1, 2, 3, 4];
       const ph = PrimeHarmonyDate.fromDate(
         new Date(Date.UTC(year, month - 1, day)),
       );
-      primeOutput.textContent = formatPrime(ph, locale);
+      primeOutput.textContent = formatPrimeDate(ph, locale);
       primeCycleOutput.textContent = formatCycle(ph, locale);
     };
 

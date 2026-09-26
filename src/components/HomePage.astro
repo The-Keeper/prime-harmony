@@ -1,0 +1,110 @@
+---
+import Layout from "../layouts/Layout.astro";
+import SeasonCalendar from "./SeasonCalendar.astro";
+import DateConverter from "./DateConverter.astro";
+import { PrimeHarmonyDate } from "../lib/calendar";
+import { formatCycle, formatPrimeDate, formatSeasonTitle } from "../lib/format";
+import { getContent, type Locale } from "../lib/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const content = getContent(locale);
+
+const local = PrimeHarmonyDate.fromDate(new Date()).toLocalDate();
+const primeLabel = formatPrimeDate(local, locale);
+const cycleLabel = formatCycle(local, locale);
+const calendarTitle =
+  local.season === 0 ? content.hero.solsticeTitle : formatSeasonTitle(local.season, locale);
+
+const featureRows = [content.features.slice(0, 3), content.features.slice(3)];
+---
+
+<Layout title={content.title}>
+  <main class="container">
+    <section class="hero grid">
+      <div class="even-column centered">
+        <h1>{primeLabel}</h1>
+        <p>{cycleLabel}</p>
+        <a role="button" href="#what">{content.hero.whatButton}</a>
+      </div>
+
+      <div class="container">
+        <SeasonCalendar currentDay={local.day + 1} title={calendarTitle} />
+      </div>
+    </section>
+
+    <section id="convert" class="container compact">
+      <h2>{content.convert.title}</h2>
+      <DateConverter locale={locale} />
+    </section>
+
+    <section id="what" class="even-column container">
+      <h2>{content.what.title}</h2>
+
+      <div class="grid">
+        <div>
+          <h3>{content.what.alwaysTitle}</h3>
+          <ul>
+            <li>{content.what.perennial}</li>
+            <li>{content.what.cycles}</li>
+            <li>{content.what.equalSeasons}</li>
+          </ul>
+        </div>
+        <div class="smallcal">
+          <SeasonCalendar />
+        </div>
+      </div>
+      <div class="grid">
+        <h3>{content.what.howTitle}</h3>
+        <ul>
+          <li>{content.what.fourSeasons}</li>
+          <li>{content.what.leap}</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="even-column container">
+      {
+        featureRows.map((row) => (
+          <div class="grid">
+            {row.map((feature) => (
+              <article>
+                <h4>
+                  {feature.icon} {feature.title}
+                </h4>
+                <p>{feature.text}</p>
+              </article>
+            ))}
+          </div>
+        ))
+      }
+    </section>
+
+    <section>
+      <article>
+        {
+          content.faq.map((item, index) => (
+            <>
+              {index > 0 && <hr />}
+              <details name="faq" open={item.open}>
+                <summary>{item.question}</summary>
+                {item.items ? (
+                  <ul>
+                    {item.items.map((entry) => (
+                      <li>{entry}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>{item.answer}</p>
+                )}
+              </details>
+            </>
+          ))
+        }
+      </article>
+    </section>
+  </main>
+</Layout>

@@ -1,9 +1,24 @@
-<theme-toggle>
+---
+import { getContent, type Locale } from "../lib/i18n";
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = "en" } = Astro.props;
+const content = getContent(locale);
+---
+
+<theme-toggle
+  data-to-light={content.theme.toLight}
+  data-to-dark={content.theme.toDark}
+>
   <button></button>
 </theme-toggle>
+
 <script>
   class ThemeToggle extends HTMLElement {
-    private readonly STORAGE_KEY = "theme-preference";
+    private readonly STORAGE_KEY = "theme";
     private _darkTheme = false;
     private button: HTMLButtonElement | null;
 
@@ -16,17 +31,11 @@
         return;
       }
 
-      // Load theme preference
       const savedTheme = localStorage.getItem(this.STORAGE_KEY);
-      if (!savedTheme) {
-        this.darkTheme = window.matchMedia(
-          "(prefers-color-scheme: dark)",
-        ).matches;
-      } else {
-        this.darkTheme = savedTheme === "dark";
-      }
+      this.darkTheme = savedTheme
+        ? savedTheme === "dark"
+        : window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-      // Setup event listeners
       this.button.addEventListener("click", () => {
         this.darkTheme = !this.darkTheme;
         localStorage.setItem(
@@ -35,12 +44,11 @@
         );
       });
 
-      // Listen for system theme changes
       window
         .matchMedia("(prefers-color-scheme: dark)")
-        .addEventListener("change", (e) => {
+        .addEventListener("change", (event) => {
           if (!localStorage.getItem(this.STORAGE_KEY)) {
-            this.darkTheme = e.matches;
+            this.darkTheme = event.matches;
           }
         });
     }
@@ -51,27 +59,22 @@
 
     set darkTheme(value: boolean) {
       this._darkTheme = value;
-      if (value) {
-        document.documentElement.dataset['theme'] = 'dark';
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.dataset['theme'] = 'light';
-        document.documentElement.classList.remove("dark");
-      }
+      const theme = value ? "dark" : "light";
 
-      const iconSun = "☀️";
-      const iconMoon = "🌙";
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.classList.toggle("dark", value);
 
       if (!this.button) {
         return;
       }
 
-      this.button.innerHTML = value ? iconSun : iconMoon;
+      this.button.innerHTML = value ? "☀️" : "🌙";
       this.button.setAttribute(
         "aria-label",
-        value ? "Switch to light theme" : "Switch to dark theme",
+        value ? this.dataset.toLight ?? "" : this.dataset.toDark ?? "",
       );
     }
   }
+
   customElements.define("theme-toggle", ThemeToggle);
 </script>

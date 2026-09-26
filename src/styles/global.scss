@@ -1,0 +1,32 @@
+// Pico CSS configuration (kept in one place so Layout stays declarative).
+@use "@picocss/pico/scss/pico" with (
+  $theme-color: "jade",
+  $enable-semantic-container: true,
+  $enable-classes: true,
+  $modules: (
+    "content/code": false,
+    "forms/input-color": false,
+    "forms/input-date": false,
+    "forms/input-file": false,
+    "forms/input-range": false,
+    "forms/input-search": false,
+    "components/accordion": true,
+    "components/card": false,
+    "components/dropdown": true,
+    "components/loading": false,
+    "components/modal": false,
+    "components/nav": true,
+    "components/progress": false,
+    "components/tooltip": false,
+    "utilities/accessibility": false,
+    "utilities/reduce-motion": false
+  )
+);
+
+:root {
+  --pico-font-family: Arial, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
