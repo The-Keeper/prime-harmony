@@ -10,8 +10,11 @@ export default defineConfig({
         locales: ["ru", "en"],
         defaultLocale: "en",
         routing: {
-            prefixDefaultLocale: false,
-            fallbackType: "rewrite",
+            // All locales (including the default) live under /[locale]/,
+            // matching the src/pages/[locale]/ structure.
+            prefixDefaultLocale: true,
+            // Keep our own browser-language redirect at "/".
+            redirectToDefaultLocale: false,
         },
     },
     vite: {

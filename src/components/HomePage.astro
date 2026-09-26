@@ -4,13 +4,13 @@ import SeasonCalendar from "./SeasonCalendar.astro";
 import DateConverter from "./DateConverter.astro";
 import { PrimeHarmonyDate } from "../lib/calendar";
 import { formatCycle, formatPrimeDate, formatSeasonTitle } from "../lib/format";
-import { getContent, type Locale } from "../lib/i18n";
+import { getContent, resolveLocale, type Locale } from "../lib/i18n";
 
 interface Props {
-  locale: Locale;
+  locale?: Locale;
 }
 
-const { locale } = Astro.props;
+const locale = Astro.props.locale ?? resolveLocale(Astro.currentLocale);
 const content = getContent(locale);
 
 const local = PrimeHarmonyDate.fromDate(new Date()).toLocalDate();

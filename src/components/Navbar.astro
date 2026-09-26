@@ -2,9 +2,9 @@
 import ThemeToggle from "./ThemeToggle.astro";
 import Logo from "../assets/logo.svg";
 import LangSelect from "./LangSelect.astro";
-import { LANGUAGE_NAMES, getContent, type Locale } from "../lib/i18n";
+import { LANGUAGE_NAMES, getContent, resolveLocale } from "../lib/i18n";
 
-const currentLang = (Astro.currentLocale ?? "en") as Locale;
+const currentLang = resolveLocale(Astro.currentLocale);
 const content = getContent(currentLang);
 ---
 

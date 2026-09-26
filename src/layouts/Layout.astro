@@ -1,19 +1,36 @@
 ---
+import { getAbsoluteLocaleUrl } from "astro:i18n";
 import Navbar from "../components/Navbar.astro";
 import ThemeInit from "../components/ThemeInit.astro";
+import { DEFAULT_LOCALE, LOCALES, resolveLocale } from "../lib/i18n";
 import "../styles/global.scss";
 import "../styles/main.css";
 
-const currentLocale = Astro.currentLocale;
 const { title } = Astro.props;
+const locale = resolveLocale(Astro.currentLocale);
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const alternates = LOCALES.map((code) => ({
+  code,
+  href: getAbsoluteLocaleUrl(code, ""),
+}));
 ---
 
-<html lang={currentLocale}>
+<html lang={locale}>
 	<head>
 		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
+		{
+			alternates.map(({ code, href }) => (
+				<link rel="alternate" hreflang={code} href={href} />
+			))
+		}
+		<link
+			rel="alternate"
+			hreflang="x-default"
+			href={getAbsoluteLocaleUrl(DEFAULT_LOCALE, "")}
+		/>
 		<title>{title}</title>
 	</head>
 	<body class="bg-background text-text">

@@ -7,6 +7,13 @@ export const LANGUAGE_NAMES: Record<Locale, string> = {
   en: "English",
 };
 
+export const DEFAULT_LOCALE: Locale = "en";
+
+/** Coerce whatever `Astro.currentLocale` gives us into a supported locale. */
+export function resolveLocale(value: string | null | undefined): Locale {
+  return LOCALES.includes(value as Locale) ? (value as Locale) : DEFAULT_LOCALE;
+}
+
 export interface ConverterStrings {
   g2p: string;
   p2g: string;

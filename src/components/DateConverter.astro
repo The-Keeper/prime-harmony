@@ -1,13 +1,13 @@
 ---
 import SeasonCalendar from "./SeasonCalendar.astro";
 import { formatSeasonTitle } from "../lib/format";
-import { getContent, type Locale } from "../lib/i18n";
+import { DEFAULT_LOCALE, getContent, type Locale } from "../lib/i18n";
 
 interface Props {
   locale?: Locale;
 }
 
-const { locale = "en" } = Astro.props;
+const { locale = DEFAULT_LOCALE } = Astro.props;
 const t = getContent(locale).convert.converter;
 
 const seasons = [0, 1, 2, 3, 4];
