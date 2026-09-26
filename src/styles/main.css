@@ -3,6 +3,10 @@ section {
 	border-radius: 1rem; /* 16px */
 }
 
+section.compact {
+	min-height: auto;
+}
+
 .even-column {
 	display: flex;
 	flex-direction: column;

@@ -2,6 +2,7 @@
 import Layout from "../../layouts/Layout.astro";
 import { PrimeHarmonyDate } from "../../lib/calendar";
 import SeasonCalendar from "../../components/SeasonCalendar.astro";
+import DateConverter from "../../components/DateConverter.astro";
 import "../../styles/main.css";
 import { createOrdinalFunction } from "../../utils/ordinals";
 
@@ -71,6 +72,11 @@ const dayLabel =
           <li>Leap year is when year number in the cycle is prime</li>
         </ul>
       </div>
+    </section>
+
+    <section id="convert" class="container compact">
+      <h2>Date conversion</h2>
+      <DateConverter locale="en" />
     </section>
 
     <!-- Feature Grid (Optional) -->
@@ -150,16 +156,15 @@ const dayLabel =
           <ul>
             <li>
               It is a mathematical and design experiment, not a replacement for
-              the civil calendar.
+              the civil calendar. It arose from an observation: 31 leap years
+              per 128 years is the fraction 31/128, which approximates the
+              fractional part of the tropical year very closely, and there are
+              exactly 31 primes below 128 — hence the rule.
             </li>
             <li>
-              It has no OS, library or standards support; familiar months, weeks
-              and holiday dates are tied to the Gregorian calendar.
-            </li>
-            <li>
-              Its practical use is as a secondary, seasonal calendar: seasons
-              start at the winter solstice and the mean year closely matches the
-              tropical year.
+              Its practical use is as a secondary, seasonal calendar — including
+              fantasy worlds and tabletop games: seasons start at the winter
+              solstice and the mean year closely matches the tropical year.
             </li>
             <li>
               The math is real: 31 leap years per 128-year cycle, and
