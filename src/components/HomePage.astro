@@ -17,7 +17,9 @@ const local = PrimeHarmonyDate.fromDate(new Date()).toLocalDate();
 const primeLabel = formatPrimeDate(local, locale);
 const cycleLabel = formatCycle(local, locale);
 const calendarTitle =
-  local.season === 0 ? content.hero.solsticeTitle : formatSeasonTitle(local.season, locale);
+  local.season === 0
+    ? content.hero.solsticeTitle
+    : formatSeasonTitle(local.season, locale);
 
 const featureRows = [content.features.slice(0, 3), content.features.slice(3)];
 ---
@@ -53,7 +55,7 @@ const featureRows = [content.features.slice(0, 3), content.features.slice(3)];
             <li>{content.what.equalSeasons}</li>
           </ul>
         </div>
-        <div class="smallcal">
+        <div class="smallcal container">
           <SeasonCalendar />
         </div>
       </div>
