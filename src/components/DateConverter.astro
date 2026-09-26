@@ -40,36 +40,43 @@ const seasons = [0, 1, 2, 3, 4];
 >
   <div role="group">
     <button type="button" data-mode="g2p" aria-pressed="true">{t.g2p}</button>
-    <button type="button" data-mode="p2g" aria-pressed="false" class="outline">{t.p2g}</button>
+    <button type="button" data-mode="p2g" aria-pressed="false" class="outline"
+      >{t.p2g}</button
+    >
   </div>
 
-  <div data-panel="g2p">
+  <div data-panel="g2p" class="grid">
     <label>
       {t.gregorianDate}
       <input type="date" data-gregorian />
     </label>
-    <p><output data-prime-output aria-live="polite"></output></p>
+    <div><output data-prime-output aria-live="polite"></output></div>
   </div>
 
   <div data-panel="p2g" hidden>
     <div class="grid">
-      <label>
-        {t.year}
-        <input type="number" step="1" data-year />
-      </label>
-      <label>
-        {t.season}
-        <select data-season>
-          {seasons.map((value) => (
-            <option value={value}>{value === 0 ? t.festival : t.seasonN(value)}</option>
-          ))}
-        </select>
-      </label>
+      <div>
+        <label>
+          {t.year}
+          <input type="number" step="1" data-year />
+        </label>
+        <label>
+          {t.season}
+          <select data-season>
+            {
+              seasons.map((value) => (
+                <option value={value}>
+                  {value === 0 ? t.festival : t.seasonN(value)}
+                </option>
+              ))
+            }
+          </select>
+        </label>
+
+        <SeasonCalendar interactive />
+      </div>
+      <p><output data-gregorian-output aria-live="polite"></output></p>
     </div>
-
-    <SeasonCalendar interactive />
-
-    <p><output data-gregorian-output aria-live="polite"></output></p>
   </div>
 </div>
 
@@ -103,7 +110,9 @@ const seasons = [0, 1, 2, 3, 4];
     const gregorianOutput = root.querySelector("[data-gregorian-output]");
     const yearInput = root.querySelector("[data-year]");
     const seasonSelect = root.querySelector("[data-season]");
-    const calendar = root.querySelector('[data-panel="p2g"] [data-season-calendar]');
+    const calendar = root.querySelector(
+      '[data-panel="p2g"] [data-season-calendar]',
+    );
 
     const state = { year: 0, season: 1, day: 1 };
 
@@ -131,7 +140,11 @@ const seasons = [0, 1, 2, 3, 4];
 
     const updateGregorian = () => {
       try {
-        const ph = new PrimeHarmonyDate(state.year, state.season, state.day - 1);
+        const ph = new PrimeHarmonyDate(
+          state.year,
+          state.season,
+          state.day - 1,
+        );
         gregorianOutput.textContent = ph.toDate().toISOString().slice(0, 10);
       } catch {
         gregorianOutput.textContent = msgInvalidCalendarDate;
@@ -152,7 +165,9 @@ const seasons = [0, 1, 2, 3, 4];
       const value = gregorianInput.value;
       const [year, month, day] = value.split("-").map(Number);
       if (!year || !month || !day) return;
-      const ph = PrimeHarmonyDate.fromDate(new Date(Date.UTC(year, month - 1, day)));
+      const ph = PrimeHarmonyDate.fromDate(
+        new Date(Date.UTC(year, month - 1, day)),
+      );
       primeOutput.textContent = formatPrime(ph, locale);
     };
 
@@ -173,7 +188,9 @@ const seasons = [0, 1, 2, 3, 4];
       sync();
     });
 
-    tabs.forEach((tab) => tab.addEventListener("click", () => setMode(tab.dataset.mode)));
+    tabs.forEach((tab) =>
+      tab.addEventListener("click", () => setMode(tab.dataset.mode)),
+    );
     gregorianInput.addEventListener("input", convertGregorian);
     gregorianInput.addEventListener("change", convertGregorian);
 
