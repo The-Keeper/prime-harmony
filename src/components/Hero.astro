@@ -1,0 +1,78 @@
+---
+import SeasonCalendar from "./SeasonCalendar.astro";
+import { PrimeHarmonyDate } from "../lib/calendar";
+import { formatCycle, formatPrimeDate, formatSeasonTitle } from "../lib/format";
+import { getContent, resolveLocale, type Locale } from "../lib/i18n";
+
+interface Props {
+  locale?: Locale;
+}
+
+const locale = Astro.props.locale ?? resolveLocale(Astro.currentLocale);
+const content = getContent(locale);
+
+// Build-time fallback only: the client script recomputes this in the
+// visitor's timezone (a static build cannot know it).
+const now = PrimeHarmonyDate.fromDate(new Date());
+const primeLabel = formatPrimeDate(now, locale);
+const cycleLabel = formatCycle(now, locale);
+const calendarTitle =
+  now.season === 0
+    ? content.hero.solsticeTitle
+    : formatSeasonTitle(now.season, locale);
+---
+
+<section class="hero grid" data-home-hero data-locale={locale}>
+  <div class="even-column centered">
+    <h1 data-hero-date>{primeLabel}</h1>
+    <p data-hero-cycle>{cycleLabel}</p>
+    <a role="button" href="#what">{content.hero.whatButton}</a>
+  </div>
+
+  <div class="container">
+    <SeasonCalendar currentDay={now.day + 1} title={calendarTitle} />
+  </div>
+</section>
+
+<script>
+  import { PrimeHarmonyDate } from "../lib/calendar";
+  import {
+    formatCycle,
+    formatPrimeDate,
+    formatSeasonTitle,
+  } from "../lib/format";
+  import { getContent, resolveLocale } from "../lib/i18n";
+
+  document.querySelectorAll("[data-home-hero]").forEach((hero) => {
+    const locale = resolveLocale(hero.dataset.locale);
+    const content = getContent(locale);
+
+    const update = () => {
+      const local = PrimeHarmonyDate.fromDate(new Date()).toLocalDate();
+
+      const dateEl = hero.querySelector("[data-hero-date]");
+      if (dateEl) dateEl.textContent = formatPrimeDate(local, locale);
+
+      const cycleEl = hero.querySelector("[data-hero-cycle]");
+      if (cycleEl) cycleEl.textContent = formatCycle(local, locale);
+
+      const calendar = hero.querySelector("[data-season-calendar]");
+      if (calendar) {
+        calendar.dispatchEvent(
+          new CustomEvent("season-calendar:set", {
+            detail: {
+              day: local.day + 1,
+              title:
+                local.season === 0
+                  ? content.hero.solsticeTitle
+                  : formatSeasonTitle(local.season, locale),
+            },
+          }),
+        );
+      }
+    };
+
+    // Defer until the SeasonCalendar script has attached its listener.
+    setTimeout(update, 0);
+  });
+</script>

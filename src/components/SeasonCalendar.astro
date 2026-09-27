@@ -49,36 +49,40 @@ const visibleDays = Math.min(Math.max(days, 1), SEASON_LENGTH);
                 );
             }
 
-            return <div class={dayClass} hidden={hidden}>{day}</div>;
+            return <div class={dayClass} data-day={day} hidden={hidden}>{day}</div>;
         })}
     </div>
 </div>
 
 <script>
     document.querySelectorAll("[data-season-calendar]").forEach((root) => {
-        if (root.dataset.interactive !== "true") return;
-
-        const buttons = Array.from(root.querySelectorAll("[data-day]"));
+        const interactive = root.dataset.interactive === "true";
+        const cells = Array.from(root.querySelectorAll("[data-day]"));
+        const titleEl = root.querySelector(".title");
         const current = {
-            day: Number(root.dataset.current) || 1,
-            days: Number(root.dataset.days) || buttons.length,
+            day: Number(root.dataset.current) || 0, // 0 = no selection
+            days: Number(root.dataset.days) || cells.length,
         };
 
         const apply = () => {
-            buttons.forEach((button) => {
-                const day = Number(button.dataset.day);
-                const isCurrent = day === current.day;
-                button.hidden = day > current.days;
-                button.setAttribute("aria-pressed", String(isCurrent));
-                button.classList.toggle("past-day", day < current.day);
-                button.classList.toggle("future-day", day > current.day);
-                button.classList.toggle("current-day", isCurrent);
+            const hasSelection = current.day > 0;
+            cells.forEach((cell) => {
+                const day = Number(cell.dataset.day);
+                const isCurrent = hasSelection && day === current.day;
+                cell.hidden = day > current.days;
+                if (interactive) {
+                    cell.setAttribute("aria-pressed", String(isCurrent));
+                }
+                cell.classList.toggle("past-day", hasSelection && day < current.day);
+                cell.classList.toggle("future-day", hasSelection && day > current.day);
+                cell.classList.toggle("current-day", isCurrent);
             });
             root.dataset.current = String(current.day);
             root.dataset.days = String(current.days);
         };
 
         const emit = () => {
+            if (!interactive) return;
             root.dispatchEvent(
                 new CustomEvent("season-calendar:change", {
                     bubbles: true,
@@ -87,18 +91,21 @@ const visibleDays = Math.min(Math.max(days, 1), SEASON_LENGTH);
             );
         };
 
-        buttons.forEach((button) =>
-            button.addEventListener("click", () => {
-                current.day = Number(button.dataset.day);
-                apply();
-                emit();
-            }),
-        );
+        if (interactive) {
+            cells.forEach((cell) =>
+                cell.addEventListener("click", () => {
+                    current.day = Number(cell.dataset.day);
+                    apply();
+                    emit();
+                }),
+            );
+        }
 
         root.addEventListener("season-calendar:set", (event) => {
             const detail = event.detail ?? {};
             if (detail.days != null) current.days = Number(detail.days);
             if (detail.day != null) current.day = Number(detail.day);
+            if (detail.title != null && titleEl) titleEl.textContent = detail.title;
             if (current.day > current.days) current.day = current.days;
             if (current.day < 1) current.day = 1;
             apply();
